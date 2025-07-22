@@ -1,10 +1,15 @@
 package org.example.gateway.security.config
 
 import org.springframework.stereotype.Component
+import org.springframework.web.filter.OncePerRequestFilter
 
 
 @Component
-class JwtAuthFilter {
+open class JwtAuthFilter: OncePerRequestFilter(
+    private val jwtService: JwtService,
+    private val userDetailsService: CustomUserDetailsService
+) {
+
 
 
 
