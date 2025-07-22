@@ -1,0 +1,19 @@
+--author Edilbek
+
+CREATE USER app_user IDENTIFIED BY my_password;
+GRANT CONNECT TO app_user;
+
+GRANT
+    CREATE SESSION,
+    CREATE TABLE,
+    CREATE VIEW,
+    CREATE SEQUENCE,
+    CREATE PROCEDURE,
+    CREATE TRIGGER,
+    CREATE TYPE,
+    CREATE SYNONYM
+    TO app_user;
+
+ALTER USER app_user DEFAULT TABLESPACE users QUOTA UNLIMITED ON users;
+
+
