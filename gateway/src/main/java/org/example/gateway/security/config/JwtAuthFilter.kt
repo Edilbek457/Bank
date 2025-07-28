@@ -1,65 +1,44 @@
 package org.example.gateway.security.config
 
+import org.example.gateway.security.service.CustomUserDetailsService
+import org.example.gateway.security.service.JwtService
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.stereotype.Component
-import org.springframework.web.filter.OncePerRequestFilter
-
+import org.springframework.web.server.ServerWebExchange
+import org.springframework.web.server.WebFilter
+import org.springframework.web.server.WebFilterChain
+import reactor.core.publisher.Mono
 
 @Component
-open class JwtAuthFilter: OncePerRequestFilter(
+class JwtAuthFilter(
     private val jwtService: JwtService,
     private val userDetailsService: CustomUserDetailsService
-) {
+) : WebFilter {
 
+    override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
+        val authHeader = exchange.request.headers.getFirst("Authorization")
 
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return chain.filter(exchange)
+        }
 
+        val jwt = authHeader.substring(7)
+        val email = jwtService.extractEmail(jwt)
 
+        if (email == null) {
+            return chain.filter(exchange)
+        }
+
+        return userDetailsService.findByUsername(email)
+            .filter { jwtService.tokenIsValid(jwt, it) }
+            .flatMap { userDetails ->
+                val auth = UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.authorities
+                )
+
+                chain.filter(exchange)
+                    .contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth))
+            }
+    }
 }
-
-//@Component
-//public class JwtAuthFilter extends OncePerRequestFilter {
-//
-//    private final JwtService jwtService;
-//    private final CustomUserDetailsService userDetailsService;
-//
-//    public JwtAuthFilter(JwtService jwtService, CustomUserDetailsService userDetailsService) {
-//        this.jwtService = jwtService;
-//        this.userDetailsService = userDetailsService;
-//    }
-//
-//    @Override
-//    protected void doFilterInternal(
-//            HttpServletRequest request,
-//            HttpServletResponse response,
-//            FilterChain filterChain
-//    ) throws ServletException, IOException {
-//        final String authHeader = request.getHeader("Authorization");
-//        final String jwt;
-//        final String username;
-//
-//        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
-//
-//        jwt = authHeader.substring(7);
-//        username = jwtService.extractUsername(jwt);
-//
-//        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-//            var userDetails = userDetailsService.loadUserByUsername(username);
-//
-//            if (jwtService.isTokenValid(jwt, userDetails)) {
-//                var authToken = new UsernamePasswordAuthenticationToken(
-//                        userDetails,
-//                        null,
-//                        userDetails.getAuthorities()
-//                );
-//                authToken.setDetails(
-//                        new WebAuthenticationDetailsSource().buildDetails(request)
-//                );
-//                SecurityContextHolder.getContext().setAuthentication(authToken);
-//            }
-//        }
-//
-//        filterChain.doFilter(request, response);
-//    }
-//}

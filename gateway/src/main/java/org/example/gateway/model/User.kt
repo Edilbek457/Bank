@@ -1,83 +1,50 @@
 package org.example.gateway.model
 
 import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import java.time.LocalDate
 
-@Entity
-@Table(name = "users")
-class User(
+@Table("users")
+data class User(
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private val id: Long,
+    val id: Long? = null,
 
-    @Column(unique = true, nullable = false, name = "email")
-    private var email: String,
+    @Column("email")
+    val email: String,
 
-    @Column(unique = true, nullable = false, name = "phone_number")
-    private var phoneNumber: Long?,
+    @Column("phone_number")
+    val phoneNumber: Long?,
 
-    @Column(nullable = false, name = "user_first_name")
-    private var userFirstName: String,
+    @Column("user_first_name")
+    val userFirstName: String,
 
-    @Column(nullable = false, name = "user_last_name")
-    private var userLastName: String,
+    @Column("user_last_name")
+    val userLastName: String,
 
-    @Column(nullable = false, name = "last_active_time")
-    private var lastActiveTime: LocalDate,
+    @Column("last_active_time")
+    val lastActiveTime: LocalDate,
 
-    @Column(nullable = false, name = "create_time")
-    private var createTime : LocalDate,
+    @Column("create_time")
+    val createTime: LocalDate,
 
-    @Column(nullable = false, name = "update_time")
-    private var updateTime : LocalDate
+    @Column("update_time")
+    val updateTime: LocalDate
 ) {
     fun getId(): Long = id
-
     fun getEmail(): String = email
-
-    fun setEmail(newEmail: String) {
-        this.email = newEmail
-    }
-
+    fun setEmail(newEmail: String) { this.email = newEmail }
     fun getPhoneNumber(): Long? = phoneNumber
-
-    fun setPhoneNumber(newPhone: Long?) {
-        this.phoneNumber = newPhone
-    }
-
+    fun setPhoneNumber(newPhone: Long?) { this.phoneNumber = newPhone }
     fun getUserFirstName(): String = userFirstName
-
-    fun setUserFirstName(userFirstName: String) {
-        this.userFirstName = userFirstName
-    }
-
+    fun setUserFirstName(userFirstName: String) { this.userFirstName = userFirstName }
     fun getUserLastName(): String = userLastName
-
-    fun setUserLastName(userLastName: String) {
-        this.userLastName = userLastName
-    }
-
+    fun setUserLastName(userLastName: String) { this.userLastName = userLastName }
     fun getLastActiveTime(): LocalDate = lastActiveTime
-
-    fun setLastActiveTime(newLastActiveTime: LocalDate) {
-        this.lastActiveTime = newLastActiveTime
-    }
-
+    fun setLastActiveTime(newLastActiveTime: LocalDate) { this.lastActiveTime = newLastActiveTime }
     fun getCreateTime(): LocalDate? = createTime
-
-    fun setCreateTime(newCreateTime: LocalDate) {
-        this.createTime = newCreateTime
-    }
-
+    fun setCreateTime(newCreateTime: LocalDate) { this.createTime = newCreateTime }
     fun getUpdateTime(): LocalDate = updateTime
-
-    fun setUpdateTime(newUpdateTime: LocalDate) {
-        this.updateTime = newUpdateTime
-    }
+    fun setUpdateTime(newUpdateTime: LocalDate) { this.updateTime = newUpdateTime }
 }

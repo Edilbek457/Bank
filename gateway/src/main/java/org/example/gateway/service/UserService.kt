@@ -2,19 +2,18 @@ package org.example.gateway.service
 
 import org.example.gateway.model.User
 import org.example.gateway.repository.UserRepository
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-
+import reactor.core.publisher.Mono
 
 @Service
 class UserService (
     private val userRepository: UserRepository
 ) {
-    fun getUserByEmail(email: String): User? {
+    fun getUserByEmail(email: String): Mono<User?> {
         return userRepository.getByEmail(email)
     }
 
-    fun getUserById(id: Int): User? {
+    fun getUserById(id: Long): Mono<User?> {
         return userRepository.getByUserId(id)
     }
 }

@@ -2,18 +2,7 @@ spring:
   application:
     name: gateway
 
-  datasource:
-    url: jdbc:oracle:thin:@localhost:1521:xe
+  r2dbc:
+    url: r2dbc:oracle://localhost:1521/ORCLPDB1
     username: app_user
-    # ????? ????? ?????? ? ????????? ??????????
     password: admin
-    driver-class-name: oracle.jdbc.OracleDriver
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.Oracle12cDialect
-        format_sql: true

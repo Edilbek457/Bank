@@ -2,70 +2,72 @@ package org.example.gateway.security.service
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import org.example.gateway.exception.user.UserNotFoundException
 import org.example.gateway.repository.UserRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
-import java.security.Key
+import reactor.core.publisher.Mono
 import java.util.*
+import javax.crypto.SecretKey
+
 
 @Service
 class JwtService (
     private val userRepository: UserRepository
 ) {
 
-    //В будущем уберу в env файл
-    val SECRET_KEY = "4F635166546A576E5A7234753778214125442A462D4A614E645267556B587032"
+    //В будущем уберу
+    private val SECRET_KEY = "4F635166546A576E5A7234753778214125442A462D4A614E645267556B587032"
 
-    private fun getSigningKey() = Keys.hmacShaKeyFor(SECRET_KEY.toByteArray())
-
-    fun generateAccessToken(userDetails: UserDetails): String {
-        val user = userRepository.findByEmail(userDetails.username)
-            ?: throw UserNotFoundException.ByEmail(userDetails.username)
-
-        val userId: Long = user.getId()
-
-        return Jwts.builder()
-            .claims()
-            .add("userId", userId)
-            .and()
-            .issuer("Bank_gateway_service")
-            .issuedAt(Date())
-            .expiration(Date(System.currentTimeMillis() + 1000 * 60 * 15)) // 15 минут
-            .signWith(getSignInKey())
-            .compact()
+    private fun getSigningKey(): SecretKey {
+        return Keys.hmacShaKeyFor(SECRET_KEY.toByteArray())
     }
 
-    fun generateRefreshToken(userDetails: UserDetails): String {
-        val user = userRepository.findByEmail(userDetails.username)
-            ?: throw UserNotFoundException.ByEmail(userDetails.username)
+    fun generateAccessToken(userDetails: UserDetails): Mono<String> {
+        return userRepository.findByEmail(userDetails.username)
+            .switchIfEmpty(Mono.error(UserNotFoundException.ByEmail(userDetails.username)))
+            .map { user ->
+                val userId = user.getId()
 
-        val userId: Long = user.getId()
-
-        return Jwts.builder()
-            .claims()
-            .add("userId", userId)
-            .add("email", user.getEmail())
-            .and()
-            .issuer("Bank_gateway_service")
-            .issuedAt(Date())
-            .expiration(Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // 7 дней
-            .signWith(Keys.hmacShaKeyFor(SECRET_KEY.toByteArray()))
-            .compact()
+                Jwts.builder()
+                    .claims()
+                    .add("userId", userId)
+                    .and()
+                    .issuer("Bank_gateway_service")
+                    .issuedAt(Date())
+                    .expiration(Date(System.currentTimeMillis() + 1000 * 60 * 15))
+                    .signWith(getSigningKey())
+                    .compact()
+            }
     }
 
-    fun getSignInKey() : Key {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY))
+    fun generateRefreshToken(userDetails: UserDetails): Mono<String> {
+        return userRepository.findByEmail(userDetails.username)
+            .switchIfEmpty(Mono.error(UserNotFoundException.ByEmail(userDetails.username)))
+            .map { user ->
+                val userId = user.getId()
+                val email = user.getEmail()
+
+                Jwts.builder()
+                    .claims()
+                    .add("userId", userId)
+                    .add("email", email)
+                    .and()
+                    .issuer("Bank_gateway_service")
+                    .issuedAt(Date())
+                    .expiration(Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
+                    .signWith(getSigningKey())
+                    .compact()
+            }
     }
 
     fun extractUserId(token: String): String {
-        return extractAllClaims(token)["userId"] as String
+        return extractAllClaims(token)["userId"].toString()
     }
 
     fun extractEmail(token: String): String {
-        return extractAllClaims(token)["email"] as String
+        return extractAllClaims(token)["email"].toString()
     }
 
     fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T {
@@ -86,14 +88,13 @@ class JwtService (
     }
 
     fun tokenIsValid(token: String, userDetails: UserDetails): Boolean {
-        val email: String = extractEmail(token)
+        val email = extractEmail(token)
         return email == userDetails.username && !tokenIsExpired(token)
     }
 
     private fun tokenIsExpired(token: String): Boolean {
         return extractExpiration(token).before(Date())
     }
-
 }
 
 
