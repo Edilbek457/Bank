@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourcePerFileMappings">
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/a969e4d4-654c-446f-b75a-591a90361afc/console.sql" value="a969e4d4-654c-446f-b75a-591a90361afc" />
     <file url="file://$PROJECT_DIR$/gateway/src/main/resources/db/changelog/sql/V1_create_user_schema.sql" value="a969e4d4-654c-446f-b75a-591a90361afc" />
     <file url="file://$PROJECT_DIR$/gateway/src/main/resources/db/changelog/sql/V2_create_user_table.sql" value="a969e4d4-654c-446f-b75a-591a90361afc" />
     <file url="file://$PROJECT_DIR$/gateway/src/main/resources/db/changelog/sql/V3_create_password_table.sql" value="a969e4d4-654c-446f-b75a-591a90361afc" />

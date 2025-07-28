@@ -13,15 +13,14 @@ class CustomUserDetailsService(
     private val userRepository: UserRepository
 ) : UserDetailsService {
 
-    override fun loadUserByUsername(username: String): UserDetails {
-        val user = userRepository.findByEmail(username)
-            ?: throw UserNotFoundException.ByEmail(username)
+    override fun loadUserByUsername(email: String): UserDetails {
+        val user = userRepository.findByEmail(email)
+            ?: throw UserNotFoundException.ByEmail(email)
 
         val password = userRepository
 
-        return User(
+        return User (
             user.getEmail(),
-
         )
     }
 }
