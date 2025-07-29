@@ -14,6 +14,7 @@ import java.time.LocalDate
 
 @Entity
 @Table(name = "password")
+
 class Password (
 
     @Id

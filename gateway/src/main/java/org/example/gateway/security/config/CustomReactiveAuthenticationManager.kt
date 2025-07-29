@@ -5,10 +5,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 
-@Component
 class CustomReactiveAuthenticationManager(
     private val userDetailsService: ReactiveUserDetailsService,
     private val passwordEncoder: PasswordEncoder

@@ -6,6 +6,7 @@ import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.server.SecurityWebFilterChain
@@ -15,7 +16,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain
 @EnableWebFluxSecurity
 open class SecurityConfig(
     private val jwtAuthFilter: JwtAuthFilter,
-    private val authenticationManager: ReactiveAuthenticationManager
+    private val userDetailsService: ReactiveUserDetailsService
 ) {
 
     @Bean
@@ -26,7 +27,7 @@ open class SecurityConfig(
                 it.pathMatchers("/auth/login", "/auth/register").permitAll()
                 it.anyExchange().authenticated()
             }
-            .authenticationManager(authenticationManager)
+            .authenticationManager(authenticationManager())
             .addFilterAt(jwtAuthFilter, SecurityWebFiltersOrder.AUTHENTICATION)
             .build()
     }
@@ -34,6 +35,11 @@ open class SecurityConfig(
     @Bean
     open fun passwordEncoder(): PasswordEncoder {
         return Argon2PasswordEncoder(16, 32, 1, 65536, 4)
+    }
+
+    @Bean
+    open fun authenticationManager(): ReactiveAuthenticationManager {
+        return CustomReactiveAuthenticationManager(userDetailsService, passwordEncoder())
     }
 }
 

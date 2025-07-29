@@ -1,7 +1,6 @@
 package org.example.gateway.exception.user
 
 open class UserNotFoundException(message: String) : RuntimeException(message) {
-
     class ByEmail(email: String) :
         UserNotFoundException("User not found with email: $email")
 

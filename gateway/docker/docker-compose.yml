@@ -5,11 +5,21 @@ services:
     image: gvenzl/oracle-xe:21-slim
     container_name: oracle-xe
     ports:
-      - "1521:1521"
+      - "1522:1521"
     environment:
       ORACLE_PASSWORD: admin
     volumes:
       - oracle-data:/opt/oracle/oradata
 
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+
 volumes:
   oracle-data:
+  redis-data:

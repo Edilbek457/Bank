@@ -14,7 +14,11 @@ class UserService (
     }
 
     fun getUserById(id: Long): Mono<User?> {
-        return userRepository.getByUserId(id)
+        return userRepository.findById(id)
+    }
+
+    fun userExistsByEmail(email: String): Mono<Boolean> {
+        return userRepository.getByEmail(email).hasElement()
     }
 }
 

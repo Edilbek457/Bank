@@ -5,32 +5,32 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import java.time.LocalDate
 
-@Table("users")
+@Table(name = "users")
 data class User(
 
     @Id
-    val id: Long? = null,
+    private var id: Long,
 
     @Column("email")
-    val email: String,
+    private var email: String,
 
     @Column("phone_number")
-    val phoneNumber: Long?,
+    private var phoneNumber: Long?,
 
     @Column("user_first_name")
-    val userFirstName: String,
+    private var userFirstName: String,
 
     @Column("user_last_name")
-    val userLastName: String,
+    private var userLastName: String,
 
     @Column("last_active_time")
-    val lastActiveTime: LocalDate,
+    private var lastActiveTime: LocalDate,
 
     @Column("create_time")
-    val createTime: LocalDate,
+    private var createTime: LocalDate,
 
     @Column("update_time")
-    val updateTime: LocalDate
+    private var updateTime: LocalDate
 ) {
     fun getId(): Long = id
     fun getEmail(): String = email
